@@ -1,5 +1,7 @@
 package dev.fabriciosilva.webservice.domain.cliente;
 
+import dev.fabriciosilva.webservice.domain.cliente.dto.ClienteAtualizacao;
+import dev.fabriciosilva.webservice.domain.cliente.dto.ClienteForm;
 import dev.fabriciosilva.webservice.domain.notafiscal.NotaFiscal;
 
 import javax.persistence.*;
@@ -20,4 +22,29 @@ public class Cliente {
     public Cliente() {
     }
 
+    public Cliente(ClienteForm form) {
+        this.codigo = form.getCodigo();
+        this.nome = form.getNome();
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getCodigo() {
+        return codigo;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public void atualizarDados(ClienteAtualizacao dados) {
+        if(dados.getCodigo() != null) {
+            this.codigo = dados.getCodigo();
+        }
+        if(dados.getNome() != null) {
+            this.nome = dados.getNome();
+        }
+    }
 }
