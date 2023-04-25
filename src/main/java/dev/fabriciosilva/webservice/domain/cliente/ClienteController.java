@@ -24,7 +24,10 @@ public class ClienteController {
     @GetMapping
     public ResponseEntity listar(@PageableDefault Pageable page) {
 
-        return ResponseEntity.ok(repository.findAll(page));
+        return ResponseEntity.ok(
+                repository.findAll(page)
+                        .map(ClienteInfo::new)
+        );
     }
 
     @PostMapping
@@ -58,7 +61,7 @@ public class ClienteController {
 
     @DeleteMapping("/{id}")
     @Transactional
-    public ResponseEntity remover(Long id) {
+    public ResponseEntity remover(@PathVariable Long id) {
         repository.deleteById(id);
 
         return ResponseEntity.noContent().build();
