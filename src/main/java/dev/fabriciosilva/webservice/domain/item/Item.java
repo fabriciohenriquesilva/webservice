@@ -1,5 +1,6 @@
 package dev.fabriciosilva.webservice.domain.item;
 
+import dev.fabriciosilva.webservice.domain.item.dto.ItemAtualizacao;
 import dev.fabriciosilva.webservice.domain.item.dto.ItemForm;
 import dev.fabriciosilva.webservice.domain.notafiscal.NotaFiscal;
 import dev.fabriciosilva.webservice.domain.produto.Produto;
@@ -64,5 +65,19 @@ public class Item {
         this.valorTotal = this.produto
                 .getValorUnitario()
                 .multiply(new BigDecimal(this.quantidade));
+    }
+
+    public void atualizarDados(ItemAtualizacao dados) {
+        if(dados.getNumeroSequencial() != null) {
+            this.numeroSequencial = dados.getNumeroSequencial();
+        }
+        if(dados.getQuantidade() != null) {
+            this.quantidade = dados.getQuantidade();
+        }
+        if(dados.getProduto() != null) {
+            this.produto = new Produto(dados.getProduto());
+        }
+
+        calculaValorTotal();
     }
 }
