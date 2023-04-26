@@ -1,10 +1,12 @@
 package dev.fabriciosilva.webservice.domain.item;
 
+import dev.fabriciosilva.webservice.domain.item.dto.ItemForm;
 import dev.fabriciosilva.webservice.domain.notafiscal.NotaFiscal;
 import dev.fabriciosilva.webservice.domain.produto.Produto;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.util.NoSuchElementException;
 
 @Entity
 @Table(name = "item")
@@ -25,5 +27,42 @@ public class Item {
     public Item() {
     }
 
+    public Item(ItemForm form) {
+        this.numeroSequencial = form.getNumeroSequencial();
+        this.quantidade = form.getQuantidade();
+    }
 
+    public Long getId() {
+        return id;
+    }
+
+    public Integer getNumeroSequencial() {
+        return numeroSequencial;
+    }
+
+    public Integer getQuantidade() {
+        return quantidade;
+    }
+
+    public BigDecimal getValorTotal() {
+        return valorTotal;
+    }
+
+    public Produto getProduto() {
+        return produto;
+    }
+
+    public void setProduto(Produto produto) {
+        this.produto = produto;
+    }
+
+    public void calculaValorTotal() {
+        if (this.produto == null) {
+            throw new NoSuchElementException("Produto indefinido");
+        }
+
+        this.valorTotal = this.produto
+                .getValorUnitario()
+                .multiply(new BigDecimal(this.quantidade));
+    }
 }

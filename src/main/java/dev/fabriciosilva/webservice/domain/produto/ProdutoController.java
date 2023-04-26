@@ -35,7 +35,7 @@ public class ProdutoController {
     public ResponseEntity cadastrar(@RequestBody ProdutoForm form, UriComponentsBuilder uriBuilder) {
         Produto produto = repository.save(new Produto(form));
 
-        URI uri = uriBuilder.path("/clientes/{id}").buildAndExpand(produto.getId()).toUri();
+        URI uri = uriBuilder.path("/produtos/{id}").buildAndExpand(produto.getId()).toUri();
 
         return ResponseEntity.created(uri).body(new ProdutoInfo(produto));
     }

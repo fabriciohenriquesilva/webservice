@@ -2,6 +2,7 @@ package dev.fabriciosilva.webservice.domain.produto;
 
 import dev.fabriciosilva.webservice.domain.produto.dto.ProdutoAtualizacao;
 import dev.fabriciosilva.webservice.domain.produto.dto.ProdutoForm;
+import dev.fabriciosilva.webservice.domain.produto.dto.ProdutoInfo;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -24,6 +25,13 @@ public class Produto {
         this.codigo = form.getCodigo();
         this.descricao = form.getDescricao();
         this.valorUnitario = form.getValorUnitario();
+    }
+
+    public Produto(ProdutoInfo produto) {
+        this.id = produto.getId();
+        this.codigo = produto.getCodigo();
+        this.descricao = produto.getDescricao();
+        this.valorUnitario = produto.getValorUnitario();
     }
 
     public Long getId() {
