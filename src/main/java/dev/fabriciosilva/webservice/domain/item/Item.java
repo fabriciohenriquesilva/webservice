@@ -57,6 +57,10 @@ public class Item {
         this.produto = produto;
     }
 
+    public void setNotaFiscal(NotaFiscal notaFiscal) {
+        this.notaFiscal = notaFiscal;
+    }
+
     public void calculaValorTotal() {
         if (this.produto == null) {
             throw new NoSuchElementException("Produto indefinido");
