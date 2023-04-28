@@ -7,6 +7,7 @@ import dev.fabriciosilva.webservice.domain.notafiscal.dto.NotaFiscalForm;
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -58,7 +59,20 @@ public class NotaFiscal {
         return valorTotal;
     }
 
+    public void setCliente(Cliente cliente) {
+        this.cliente = cliente;
+    }
+
     public void adicionarItem(Item item) {
+        if(this.itens == null) {
+            this.itens = new ArrayList<>();
+        }
         this.itens.add(item);
+    }
+
+    public void calcularValorTotal() {
+        this.valorTotal = this.itens.stream()
+                .map(i -> i.getValorTotal())
+                .reduce(BigDecimal::add).get();
     }
 }

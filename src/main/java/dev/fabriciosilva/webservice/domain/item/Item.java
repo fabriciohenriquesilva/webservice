@@ -4,6 +4,8 @@ import dev.fabriciosilva.webservice.domain.item.dto.ItemAtualizacao;
 import dev.fabriciosilva.webservice.domain.item.dto.ItemForm;
 import dev.fabriciosilva.webservice.domain.notafiscal.NotaFiscal;
 import dev.fabriciosilva.webservice.domain.produto.Produto;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -63,7 +65,7 @@ public class Item {
 
     public void calculaValorTotal() {
         if (this.produto == null) {
-            throw new NoSuchElementException("Produto indefinido");
+            throw new NoSuchElementException("Produto não foi informado");
         }
 
         this.valorTotal = this.produto
@@ -78,10 +80,6 @@ public class Item {
         if(dados.getQuantidade() != null) {
             this.quantidade = dados.getQuantidade();
         }
-        if(dados.getProduto() != null) {
-            this.produto = new Produto(dados.getProduto());
-        }
-
         calculaValorTotal();
     }
 }

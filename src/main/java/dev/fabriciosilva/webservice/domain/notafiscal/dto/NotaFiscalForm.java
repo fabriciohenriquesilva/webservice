@@ -1,5 +1,7 @@
 package dev.fabriciosilva.webservice.domain.notafiscal.dto;
 
+import dev.fabriciosilva.webservice.domain.cliente.dto.ClienteInfo;
+import dev.fabriciosilva.webservice.domain.item.dto.ItemForm;
 import dev.fabriciosilva.webservice.domain.item.dto.ItemInfo;
 
 import java.time.LocalDate;
@@ -8,9 +10,9 @@ import java.util.List;
 public class NotaFiscalForm {
 
     private Integer numero;
-    private Long clienteId;
+    private ClienteInfo cliente;
     private LocalDate data;
-    private List<ItemInfo> itens;
+    private List<ItemForm> itens;
 
     public NotaFiscalForm() {
     }
@@ -23,12 +25,12 @@ public class NotaFiscalForm {
         this.numero = numero;
     }
 
-    public Long getClienteId() {
-        return clienteId;
+    public ClienteInfo getCliente() {
+        return cliente;
     }
 
-    public void setClienteId(Long clienteId) {
-        this.clienteId = clienteId;
+    public void setCliente(ClienteInfo cliente) {
+        this.cliente = cliente;
     }
 
     public LocalDate getData() {
@@ -39,11 +41,11 @@ public class NotaFiscalForm {
         this.data = data;
     }
 
-    public List<ItemInfo> getItens() {
+    public List<ItemForm> getItens() {
         return itens;
     }
 
-    public void setItens(List<ItemInfo> itens) {
+    public void setItens(List<ItemForm> itens) {
         this.itens = itens;
     }
 }

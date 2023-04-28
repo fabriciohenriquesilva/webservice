@@ -1,6 +1,5 @@
 package dev.fabriciosilva.webservice.domain.notafiscal;
 
-import dev.fabriciosilva.webservice.domain.cliente.dto.ClienteInfo;
 import dev.fabriciosilva.webservice.domain.notafiscal.dto.NotaFiscalAtualizacao;
 import dev.fabriciosilva.webservice.domain.notafiscal.dto.NotaFiscalForm;
 import dev.fabriciosilva.webservice.domain.notafiscal.dto.NotaFiscalInfo;

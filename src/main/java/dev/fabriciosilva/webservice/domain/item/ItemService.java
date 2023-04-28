@@ -53,9 +53,12 @@ public class ItemService {
         Item item = itemRepository.findById(dados.getId())
                 .orElseThrow(() -> new NoSuchElementException("Não existe o item de ID: " + dados.getId()));
 
-        Produto produto = buscarProduto(dados.getProduto().getId());
+        if(dados.getProduto() != null) {
+            Produto produto = buscarProduto(dados.getProduto().getId());
+            item.setProduto(produto);
+        }
+
         item.atualizarDados(dados);
-        item.setProduto(produto);
 
         return new ItemInfo(item);
     }
