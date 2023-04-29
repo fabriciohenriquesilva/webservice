@@ -3,6 +3,7 @@ package dev.fabriciosilva.webservice.domain.produto;
 import dev.fabriciosilva.webservice.domain.produto.dto.ProdutoAtualizacao;
 import dev.fabriciosilva.webservice.domain.produto.dto.ProdutoForm;
 import dev.fabriciosilva.webservice.domain.produto.dto.ProdutoInfo;
+import dev.fabriciosilva.webservice.infra.exception.RegistroNaoEncontradoException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -12,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
-import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/produtos")
@@ -43,7 +43,7 @@ public class ProdutoController {
     @GetMapping("/{id}")
     public ResponseEntity detalhar(@PathVariable Long id) {
         Produto produto = repository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("Não existe o produto de ID: " + id));
+                .orElseThrow(() -> new RegistroNaoEncontradoException("Não existe o produto de ID: " + id));
 
         return ResponseEntity.ok(new ProdutoInfo(produto));
     }
@@ -52,7 +52,7 @@ public class ProdutoController {
     @Transactional
     public ResponseEntity atualizar(@RequestBody ProdutoAtualizacao dados) {
         Produto produto = repository.findById(dados.getId())
-                .orElseThrow(() -> new NoSuchElementException("Não existe o produto de ID: " + dados.getId()));
+                .orElseThrow(() -> new RegistroNaoEncontradoException("Não existe o produto de ID: " + dados.getId()));
 
         produto.atualizarDados(dados);
 

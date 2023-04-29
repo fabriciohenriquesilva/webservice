@@ -5,13 +5,12 @@ import dev.fabriciosilva.webservice.domain.item.dto.ItemForm;
 import dev.fabriciosilva.webservice.domain.item.dto.ItemInfo;
 import dev.fabriciosilva.webservice.domain.produto.Produto;
 import dev.fabriciosilva.webservice.domain.produto.ProdutoRepository;
+import dev.fabriciosilva.webservice.infra.exception.RegistroNaoEncontradoException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.NoSuchElementException;
 
 @Service
 public class ItemService {
@@ -42,7 +41,7 @@ public class ItemService {
 
     public ItemInfo detalhar(Long id) {
         Item item = itemRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("Não existe o item de ID: " + id));
+                .orElseThrow(() -> new RegistroNaoEncontradoException("Não existe o item de ID: " + id));
 
         return new ItemInfo(item);
     }
@@ -51,9 +50,9 @@ public class ItemService {
     public ItemInfo atualizar(ItemAtualizacao dados) {
 
         Item item = itemRepository.findById(dados.getId())
-                .orElseThrow(() -> new NoSuchElementException("Não existe o item de ID: " + dados.getId()));
+                .orElseThrow(() -> new RegistroNaoEncontradoException("Não existe o item de ID: " + dados.getId()));
 
-        if(dados.getProduto() != null) {
+        if (dados.getProduto() != null) {
             Produto produto = buscarProduto(dados.getProduto().getId());
             item.setProduto(produto);
         }
@@ -66,14 +65,14 @@ public class ItemService {
     @Transactional
     public void remover(Long id) {
         Item item = itemRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("Item informado não existe! Favor conferir dados"));
+                .orElseThrow(() -> new RegistroNaoEncontradoException("Item informado não existe! Favor conferir dados"));
 
         itemRepository.delete(item);
     }
 
     private Produto buscarProduto(Long produtoId) {
         if (!produtoRepository.existsById(produtoId)) {
-            throw new NoSuchElementException("Produto informado não existe! Favor conferir dados!");
+            throw new RegistroNaoEncontradoException("Produto informado não existe! Favor conferir dados!");
         }
         return produtoRepository.getReferenceById(produtoId);
     }

@@ -3,6 +3,7 @@ package dev.fabriciosilva.webservice.domain.cliente;
 import dev.fabriciosilva.webservice.domain.cliente.dto.ClienteAtualizacao;
 import dev.fabriciosilva.webservice.domain.cliente.dto.ClienteForm;
 import dev.fabriciosilva.webservice.domain.cliente.dto.ClienteInfo;
+import dev.fabriciosilva.webservice.infra.exception.RegistroNaoEncontradoException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -12,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
-import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/clientes")
@@ -43,7 +43,7 @@ public class ClienteController {
     @GetMapping("/{id}")
     public ResponseEntity detalhar(@PathVariable Long id) {
         Cliente cliente = repository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("Não existe o cliente de ID: " + id));
+                .orElseThrow(() -> new RegistroNaoEncontradoException("Não existe o cliente de ID: " + id));
 
         return ResponseEntity.ok(new ClienteInfo(cliente));
     }
@@ -52,7 +52,7 @@ public class ClienteController {
     @Transactional
     public ResponseEntity atualizar(@RequestBody ClienteAtualizacao dados) {
         Cliente cliente = repository.findById(dados.getId())
-                .orElseThrow(() -> new NoSuchElementException("Não existe o cliente de ID: " + dados.getId()));
+                .orElseThrow(() -> new RegistroNaoEncontradoException("Não existe o cliente de ID: " + dados.getId()));
 
         cliente.atualizarDados(dados);
 
