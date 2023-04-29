@@ -22,7 +22,7 @@ public class NotaFiscal {
     @JoinColumn(name = "fk_cliente")
     private Cliente cliente;
     private LocalDate data;
-    @OneToMany(mappedBy = "notaFiscal")
+    @OneToMany(mappedBy = "notaFiscal", orphanRemoval = true)
     private List<Item> itens;
     private BigDecimal valorTotal;
 
@@ -32,7 +32,6 @@ public class NotaFiscal {
     public NotaFiscal(NotaFiscalForm form) {
         this.numero = form.getNumero();
         this.data = form.getData();
-//        this. = form.getData();
     }
 
     public Long getId() {

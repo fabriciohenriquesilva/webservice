@@ -7,6 +7,7 @@ import dev.fabriciosilva.webservice.domain.item.ItemRepository;
 import dev.fabriciosilva.webservice.domain.notafiscal.dto.NotaFiscalAtualizacao;
 import dev.fabriciosilva.webservice.domain.notafiscal.dto.NotaFiscalForm;
 import dev.fabriciosilva.webservice.domain.notafiscal.dto.NotaFiscalInfo;
+import dev.fabriciosilva.webservice.domain.notafiscal.validations.ValidadorNotaFiscal;
 import dev.fabriciosilva.webservice.domain.produto.Produto;
 import dev.fabriciosilva.webservice.domain.produto.ProdutoRepository;
 import dev.fabriciosilva.webservice.infra.exception.RegistroNaoEncontradoException;
@@ -15,6 +16,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 public class NotaFiscalService {
@@ -31,23 +34,27 @@ public class NotaFiscalService {
     @Autowired
     private ProdutoRepository produtoRepository;
 
+    @Autowired
+    private List<ValidadorNotaFiscal> validacoes;
+
     public Page<NotaFiscalInfo> listar(Pageable page) {
         return notaFiscalRepository.findAll(page).map(NotaFiscalInfo::new);
     }
 
     @Transactional
     public NotaFiscalInfo cadastrar(NotaFiscalForm form) {
-        if (!clienteRepository.existsById(form.getCliente().getId())) {
-            throw new RegistroNaoEncontradoException("Não existe o cliente de ID: " + form.getCliente().getId());
-        }
 
-        Cliente cliente = clienteRepository.getReferenceById(form.getCliente().getId());
+        validacoes.forEach(v -> v.validar(form));
+
+        Long clienteId = form.getCliente().getId();
+        Cliente cliente = clienteRepository.getReferenceById(clienteId);
+
         NotaFiscal notaFiscal = new NotaFiscal(form);
         notaFiscal.setCliente(cliente);
         notaFiscalRepository.save(notaFiscal);
+
         adicionarItem(form, notaFiscal);
 
-        notaFiscal.getItens().forEach(i -> i.setNotaFiscal(notaFiscal));
         notaFiscal.calcularValorTotal();
 
         return new NotaFiscalInfo(notaFiscal);
@@ -68,7 +75,7 @@ public class NotaFiscalService {
     @Transactional
     public void remover(Long id) {
         NotaFiscal notaFiscal = notaFiscalRepository.findById(id)
-                .orElseThrow(() -> new RegistroNaoEncontradoException("Não existe a nota fiscal de ID: " + id));
+                .orElseThrow(() -> new RegistroNaoEncontradoException("A Nota Fiscal informada não está cadastrada no sistema! ID = " + id));
 
         notaFiscalRepository.delete(notaFiscal);
     }
@@ -76,18 +83,17 @@ public class NotaFiscalService {
     @Transactional
     private void adicionarItem(NotaFiscalForm form, NotaFiscal notaFiscal) {
         form.getItens().forEach(itemForm -> {
-            Long id = itemForm.getProduto().getId();
 
-            if (!produtoRepository.existsById(id)) {
-                throw new RegistroNaoEncontradoException("Não existe a nota fiscal de ID: " + id);
-            }
-            Produto produto = produtoRepository.getReferenceById(id);
+            Long produtoId = itemForm.getProduto().getId();
+            Produto produto = produtoRepository.getReferenceById(produtoId);
+
             Item item = new Item(itemForm);
             item.setProduto(produto);
             item.setNotaFiscal(notaFiscal);
             item.calculaValorTotal();
-            notaFiscal.adicionarItem(item);
+
             itemRepository.save(item);
+            notaFiscal.adicionarItem(item);
         });
     }
 }

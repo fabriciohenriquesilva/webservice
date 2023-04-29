@@ -2,7 +2,6 @@ package dev.fabriciosilva.webservice.domain.notafiscal.dto;
 
 import dev.fabriciosilva.webservice.domain.cliente.dto.ClienteInfo;
 import dev.fabriciosilva.webservice.domain.item.dto.ItemForm;
-import dev.fabriciosilva.webservice.domain.item.dto.ItemInfo;
 
 import java.time.LocalDate;
 import java.util.List;
