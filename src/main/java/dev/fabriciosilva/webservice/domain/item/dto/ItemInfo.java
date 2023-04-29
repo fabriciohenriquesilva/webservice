@@ -12,6 +12,7 @@ public class ItemInfo {
     private ProdutoInfo produto;
     private Integer quantidade;
     private BigDecimal valorTotal;
+    private Long notaFiscal;
 
     public ItemInfo() {
     }
@@ -22,6 +23,7 @@ public class ItemInfo {
         this.produto = new ProdutoInfo(item.getProduto());
         this.quantidade = item.getQuantidade();
         this.valorTotal = item.getValorTotal();
+        this.notaFiscal = item.getNotaFiscal().getNumero();
     }
 
     public Long getId() {
@@ -42,5 +44,9 @@ public class ItemInfo {
 
     public BigDecimal getValorTotal() {
         return valorTotal;
+    }
+
+    public Long getNotaFiscal() {
+        return notaFiscal;
     }
 }

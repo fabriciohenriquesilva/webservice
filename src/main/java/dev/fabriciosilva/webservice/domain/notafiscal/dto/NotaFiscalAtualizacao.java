@@ -8,7 +8,7 @@ import java.util.List;
 public class NotaFiscalAtualizacao {
 
     private Long id;
-    private Integer numero;
+    private Long numero;
     private Long clienteId;
     private LocalDate data;
     private List<ItemAtualizacao> itens;
@@ -17,7 +17,7 @@ public class NotaFiscalAtualizacao {
         return id;
     }
 
-    public Integer getNumero() {
+    public Long getNumero() {
         return numero;
     }
 

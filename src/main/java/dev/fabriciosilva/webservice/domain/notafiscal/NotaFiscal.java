@@ -18,7 +18,7 @@ public class NotaFiscal {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Integer numero;
+    private Long numero;
     @ManyToOne
     @JoinColumn(name = "fk_cliente")
     private Cliente cliente;
@@ -39,7 +39,7 @@ public class NotaFiscal {
         return id;
     }
 
-    public Integer getNumero() {
+    public Long getNumero() {
         return numero;
     }
 

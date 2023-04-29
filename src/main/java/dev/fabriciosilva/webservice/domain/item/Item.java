@@ -61,6 +61,10 @@ public class Item {
         this.notaFiscal = notaFiscal;
     }
 
+    public NotaFiscal getNotaFiscal() {
+        return notaFiscal;
+    }
+
     public void calculaValorTotal() {
         if (this.produto == null) {
             throw new NoSuchElementException("Produto não foi informado");

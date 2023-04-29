@@ -10,6 +10,7 @@ public class ItemForm {
     private ProdutoInfo produto;
     private Integer quantidade;
     private BigDecimal valorTotal;
+    private Long notaFiscal;
 
     public Integer getNumeroSequencial() {
         return numeroSequencial;
@@ -41,5 +42,13 @@ public class ItemForm {
 
     public void setValorTotal(BigDecimal valorTotal) {
         this.valorTotal = valorTotal;
+    }
+
+    public Long getNotaFiscal() {
+        return notaFiscal;
+    }
+
+    public void setNotaFiscal(Long notaFiscal) {
+        this.notaFiscal = notaFiscal;
     }
 }

@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 public class NotaFiscalInfo {
 
     private Long id;
-    private Integer numero;
+    private Long numero;
     private ClienteInfo cliente;
     private LocalDate data;
     private List<ItemInfo> itens;
@@ -36,7 +36,7 @@ public class NotaFiscalInfo {
         return id;
     }
 
-    public Integer getNumero() {
+    public Long getNumero() {
         return numero;
     }
 

@@ -3,6 +3,8 @@ package dev.fabriciosilva.webservice.domain.item;
 import dev.fabriciosilva.webservice.domain.item.dto.ItemAtualizacao;
 import dev.fabriciosilva.webservice.domain.item.dto.ItemForm;
 import dev.fabriciosilva.webservice.domain.item.dto.ItemInfo;
+import dev.fabriciosilva.webservice.domain.notafiscal.NotaFiscal;
+import dev.fabriciosilva.webservice.domain.notafiscal.NotaFiscalRepository;
 import dev.fabriciosilva.webservice.domain.produto.Produto;
 import dev.fabriciosilva.webservice.domain.produto.ProdutoRepository;
 import dev.fabriciosilva.webservice.infra.exception.RegistroNaoEncontradoException;
@@ -21,6 +23,9 @@ public class ItemService {
     @Autowired
     private ProdutoRepository produtoRepository;
 
+    @Autowired
+    private NotaFiscalRepository notaFiscalRepository;
+
 
     public Page<ItemInfo> listar(Pageable page) {
         return itemRepository.findAll(page).map(ItemInfo::new);
@@ -29,9 +34,14 @@ public class ItemService {
     @Transactional
     public ItemInfo cadastrar(ItemForm form) {
 
+        Long numeroNotaFiscal = form.getNotaFiscal();
+        NotaFiscal notaFiscal = notaFiscalRepository.findByNumero(numeroNotaFiscal)
+                .orElseThrow(() -> new RegistroNaoEncontradoException("A nota fiscal informada não está cadastrada no sistema! Número = " + numeroNotaFiscal));
+
         Produto produto = buscarProduto(form.getProduto().getId());
         Item item = new Item(form);
         item.setProduto(produto);
+        item.setNotaFiscal(notaFiscal);
         item.calculaValorTotal();
 
         itemRepository.save(item);
@@ -72,7 +82,7 @@ public class ItemService {
 
     private Produto buscarProduto(Long produtoId) {
         if (!produtoRepository.existsById(produtoId)) {
-            throw new RegistroNaoEncontradoException("Produto informado não existe! Favor conferir dados!");
+            throw new RegistroNaoEncontradoException("Produto não está cadastrado no sistema! ID = " + produtoId);
         }
         return produtoRepository.getReferenceById(produtoId);
     }
