@@ -1,14 +1,12 @@
 package dev.fabriciosilva.webservice.domain.item.dto;
 
-import dev.fabriciosilva.webservice.domain.produto.dto.ProdutoInfo;
-
 import java.math.BigDecimal;
 
 public class ItemAtualizacao {
 
     private Long id;
     private Integer numeroSequencial;
-    private ProdutoInfo produto;
+    private Long produtoId;
     private Integer quantidade;
     private BigDecimal valorTotal;
 
@@ -20,8 +18,8 @@ public class ItemAtualizacao {
         return numeroSequencial;
     }
 
-    public ProdutoInfo getProduto() {
-        return produto;
+    public Long getProdutoId() {
+        return produtoId;
     }
 
     public Integer getQuantidade() {

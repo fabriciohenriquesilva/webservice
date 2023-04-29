@@ -2,6 +2,7 @@ package dev.fabriciosilva.webservice.domain.notafiscal;
 
 import dev.fabriciosilva.webservice.domain.cliente.Cliente;
 import dev.fabriciosilva.webservice.domain.item.Item;
+import dev.fabriciosilva.webservice.domain.notafiscal.dto.NotaFiscalAtualizacao;
 import dev.fabriciosilva.webservice.domain.notafiscal.dto.NotaFiscalForm;
 
 import javax.persistence.*;
@@ -74,4 +75,14 @@ public class NotaFiscal {
                 .map(i -> i.getValorTotal())
                 .reduce(BigDecimal::add).get();
     }
+
+    public void atualizarDados(NotaFiscalAtualizacao dados) {
+        if(dados.getNumero() != null) {
+            this.numero = dados.getNumero();
+        }
+        if(dados.getData() != null) {
+            this.data = dados.getData();
+        }
+    }
+
 }

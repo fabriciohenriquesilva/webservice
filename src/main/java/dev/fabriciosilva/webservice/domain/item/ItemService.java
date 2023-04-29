@@ -52,8 +52,8 @@ public class ItemService {
         Item item = itemRepository.findById(dados.getId())
                 .orElseThrow(() -> new RegistroNaoEncontradoException("Não existe o item de ID: " + dados.getId()));
 
-        if (dados.getProduto() != null) {
-            Produto produto = buscarProduto(dados.getProduto().getId());
+        if (dados.getProdutoId() != null) {
+            Produto produto = buscarProduto(dados.getProdutoId());
             item.setProduto(produto);
         }
 

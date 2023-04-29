@@ -4,8 +4,6 @@ import dev.fabriciosilva.webservice.domain.item.dto.ItemAtualizacao;
 import dev.fabriciosilva.webservice.domain.item.dto.ItemForm;
 import dev.fabriciosilva.webservice.domain.notafiscal.NotaFiscal;
 import dev.fabriciosilva.webservice.domain.produto.Produto;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -74,10 +72,10 @@ public class Item {
     }
 
     public void atualizarDados(ItemAtualizacao dados) {
-        if(dados.getNumeroSequencial() != null) {
+        if (dados.getNumeroSequencial() != null) {
             this.numeroSequencial = dados.getNumeroSequencial();
         }
-        if(dados.getQuantidade() != null) {
+        if (dados.getQuantidade() != null) {
             this.quantidade = dados.getQuantidade();
         }
         calculaValorTotal();

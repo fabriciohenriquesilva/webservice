@@ -62,14 +62,42 @@ public class NotaFiscalService {
 
     public NotaFiscalInfo detalhar(Long id) {
         NotaFiscal notaFiscal = notaFiscalRepository.findById(id)
-                .orElseThrow(() -> new RegistroNaoEncontradoException("Não existe a nota fiscal de ID: " + id));
+                .orElseThrow(() -> new RegistroNaoEncontradoException("A Nota Fiscal informada não está cadastrada no sistema! ID = " + id));
 
         return new NotaFiscalInfo(notaFiscal);
     }
 
     @Transactional
     public NotaFiscalInfo atualizar(NotaFiscalAtualizacao dados) {
-        return null;
+        Long notaFiscalId = dados.getId();
+        NotaFiscal notaFiscal = notaFiscalRepository.findById(notaFiscalId)
+                .orElseThrow(() -> new RegistroNaoEncontradoException("A Nota Fiscal informada não está cadastrada no sistema! ID = " + notaFiscalId));
+
+        if(dados.getClienteId() != null) {
+            Cliente cliente = clienteRepository.findById(dados.getClienteId())
+                    .orElseThrow(() -> new RegistroNaoEncontradoException("O cliente informado não está cadastrado no sistema! ID = " + dados.getClienteId()));
+            notaFiscal.setCliente(cliente);
+        }
+
+        dados.getItens().forEach(itemAtualizacao -> {
+            Item item = itemRepository.findById(itemAtualizacao.getId())
+                    .orElseThrow(() -> new RegistroNaoEncontradoException("O item informado não está presente na nota fiscal! ID = " + itemAtualizacao.getId()));
+
+            item.atualizarDados(itemAtualizacao);
+
+            Long produtoId = itemAtualizacao.getProdutoId();
+            if(produtoId != null) {
+                Produto produto = produtoRepository.findById(produtoId)
+                        .orElseThrow(() -> new RegistroNaoEncontradoException("O produto informado não está cadastrado no sistema! ID = " + produtoId));
+                item.setProduto(produto);
+                item.calculaValorTotal();
+            }
+        });
+
+        notaFiscal.atualizarDados(dados);
+        notaFiscal.calcularValorTotal();
+
+        return new NotaFiscalInfo(notaFiscal);
     }
 
     @Transactional
