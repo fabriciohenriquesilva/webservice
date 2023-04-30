@@ -4,6 +4,7 @@ import dev.fabriciosilva.webservice.domain.item.dto.ItemAtualizacao;
 import dev.fabriciosilva.webservice.domain.item.dto.ItemForm;
 import dev.fabriciosilva.webservice.domain.notafiscal.NotaFiscal;
 import dev.fabriciosilva.webservice.domain.produto.Produto;
+import dev.fabriciosilva.webservice.infra.exception.DadosValidacaoException;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -33,6 +34,13 @@ public class Item {
         this.quantidade = form.getQuantidade();
     }
 
+    public Item(Integer numeroSequencial, Produto produto, Integer quantidade, NotaFiscal notaFiscal) {
+        this.numeroSequencial = numeroSequencial;
+        this.produto = produto;
+        this.quantidade = quantidade;
+        this.notaFiscal = notaFiscal;
+    }
+
     public Long getId() {
         return id;
     }
@@ -46,6 +54,9 @@ public class Item {
     }
 
     public BigDecimal getValorTotal() {
+        if(this.valorTotal == null) {
+            calculaValorTotal();
+        }
         return valorTotal;
     }
 
@@ -73,6 +84,8 @@ public class Item {
         this.valorTotal = this.produto
                 .getValorUnitario()
                 .multiply(new BigDecimal(this.quantidade));
+
+        this.notaFiscal.calcularValorTotal();
     }
 
     public void atualizarDados(ItemAtualizacao dados) {
@@ -82,6 +95,22 @@ public class Item {
         if (dados.getQuantidade() != null) {
             this.quantidade = dados.getQuantidade();
         }
+        calculaValorTotal();
+    }
+
+    public void subtrairQuantidade(Integer quantidade) {
+        if(quantidade > this.quantidade) {
+            throw new DadosValidacaoException("Quantidade a ser removida é maior do que a presente na nota fiscal!");
+        }
+        this.quantidade -= quantidade;
+        calculaValorTotal();
+    }
+
+    public void somarQuantidade(Integer quantidade) {
+        if(quantidade <= 0) {
+            throw new DadosValidacaoException("Quantidade a ser adicionada deve ser maior que 0!");
+        }
+        this.quantidade += quantidade;
         calculaValorTotal();
     }
 }

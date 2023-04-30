@@ -19,7 +19,7 @@ public class NotaFiscal {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Long numero;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "fk_cliente")
     private Cliente cliente;
     private LocalDate data;
@@ -64,10 +64,11 @@ public class NotaFiscal {
     }
 
     public void adicionarItem(Item item) {
-        if(this.itens == null) {
+        if (this.itens == null) {
             this.itens = new ArrayList<>();
         }
         this.itens.add(item);
+        calcularValorTotal();
     }
 
     public void calcularValorTotal() {
@@ -77,12 +78,13 @@ public class NotaFiscal {
     }
 
     public void atualizarDados(NotaFiscalAtualizacao dados) {
-        if(dados.getNumero() != null) {
+        if (dados.getNumero() != null) {
             this.numero = dados.getNumero();
         }
-        if(dados.getData() != null) {
+        if (dados.getData() != null) {
             this.data = dados.getData();
         }
+        calcularValorTotal();
     }
 
 }

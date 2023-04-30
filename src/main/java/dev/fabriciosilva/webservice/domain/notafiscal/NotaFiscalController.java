@@ -1,8 +1,6 @@
 package dev.fabriciosilva.webservice.domain.notafiscal;
 
-import dev.fabriciosilva.webservice.domain.notafiscal.dto.NotaFiscalAtualizacao;
-import dev.fabriciosilva.webservice.domain.notafiscal.dto.NotaFiscalForm;
-import dev.fabriciosilva.webservice.domain.notafiscal.dto.NotaFiscalInfo;
+import dev.fabriciosilva.webservice.domain.notafiscal.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -48,5 +46,17 @@ public class NotaFiscalController {
     public ResponseEntity remover(@PathVariable Long id) {
         service.remover(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/{id}/remover-item")
+    public ResponseEntity removerItem(@RequestBody RemoverItemForm form, @PathVariable Long id) {
+        service.removerItem(id, form);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{id}/adicionar-item")
+    public ResponseEntity<NotaFiscalInfo> adicionarItem(@RequestBody AdicionarItemForm form, @PathVariable Long id) {
+        return ResponseEntity.ok(service.adicionarItem(id, form));
     }
 }

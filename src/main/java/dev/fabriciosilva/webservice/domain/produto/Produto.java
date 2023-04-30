@@ -6,6 +6,7 @@ import dev.fabriciosilva.webservice.domain.produto.dto.ProdutoInfo;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.util.Objects;
 
 @Entity
 @Table(name = "produto")
@@ -60,5 +61,18 @@ public class Produto {
         if(dados.getValorUnitario() != null) {
             this.valorUnitario = dados.getValorUnitario();
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Produto produto = (Produto) o;
+        return Objects.equals(id, produto.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }
