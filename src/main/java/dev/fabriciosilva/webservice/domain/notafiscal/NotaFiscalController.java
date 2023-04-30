@@ -26,7 +26,7 @@ public class NotaFiscalController {
     }
 
     @PostMapping
-    public ResponseEntity cadastrar(@RequestBody NotaFiscalForm form, UriComponentsBuilder uriBuilder) {
+    public ResponseEntity<NotaFiscalInfo> cadastrar(@RequestBody NotaFiscalForm form, UriComponentsBuilder uriBuilder) {
         NotaFiscalInfo notaFiscalInfo = service.cadastrar(form);
 
         URI uri = uriBuilder.path("/notas/{id}").buildAndExpand(notaFiscalInfo.getId()).toUri();
@@ -35,12 +35,12 @@ public class NotaFiscalController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity detalhar(@PathVariable Long id) {
+    public ResponseEntity<NotaFiscalInfo> detalhar(@PathVariable Long id) {
         return ResponseEntity.ok(service.detalhar(id));
     }
 
     @PutMapping
-    public ResponseEntity atualizar(@RequestBody NotaFiscalAtualizacao dados) {
+    public ResponseEntity<NotaFiscalInfo> atualizar(@RequestBody NotaFiscalAtualizacao dados) {
         return ResponseEntity.ok(service.atualizar(dados));
     }
 

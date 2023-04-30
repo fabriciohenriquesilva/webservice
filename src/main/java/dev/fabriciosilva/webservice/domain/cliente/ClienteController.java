@@ -3,12 +3,12 @@ package dev.fabriciosilva.webservice.domain.cliente;
 import dev.fabriciosilva.webservice.domain.cliente.dto.ClienteAtualizacao;
 import dev.fabriciosilva.webservice.domain.cliente.dto.ClienteForm;
 import dev.fabriciosilva.webservice.domain.cliente.dto.ClienteInfo;
-import dev.fabriciosilva.webservice.infra.exception.RegistroNaoEncontradoException;
+import dev.fabriciosilva.webservice.domain.notafiscal.dto.NotaFiscalInfo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -19,52 +19,40 @@ import java.net.URI;
 public class ClienteController {
 
     @Autowired
-    private ClienteRepository repository;
+    private ClienteService service;
 
     @GetMapping
-    public ResponseEntity listar(@PageableDefault Pageable page) {
-
-        return ResponseEntity.ok(
-                repository.findAll(page)
-                        .map(ClienteInfo::new)
-        );
+    public ResponseEntity<Page<ClienteInfo>> listar(@PageableDefault Pageable page) {
+        return ResponseEntity.ok(service.listar(page));
     }
 
     @PostMapping
-    @Transactional
-    public ResponseEntity cadastrar(@RequestBody ClienteForm form, UriComponentsBuilder uriBuilder) {
-        Cliente cliente = repository.save(new Cliente(form));
-
+    public ResponseEntity<ClienteInfo> cadastrar(@RequestBody ClienteForm form, UriComponentsBuilder uriBuilder) {
+        ClienteInfo cliente = service.cadastrar(form);
         URI uri = uriBuilder.path("/clientes/{id}").buildAndExpand(cliente.getId()).toUri();
 
-        return ResponseEntity.created(uri).body(new ClienteInfo(cliente));
+        return ResponseEntity.created(uri).body(cliente);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity detalhar(@PathVariable Long id) {
-        Cliente cliente = repository.findById(id)
-                .orElseThrow(() -> new RegistroNaoEncontradoException("Não existe o cliente de ID: " + id));
-
-        return ResponseEntity.ok(new ClienteInfo(cliente));
+    public ResponseEntity<ClienteInfo> detalhar(@PathVariable Long id) {
+        return ResponseEntity.ok(service.detalhar(id));
     }
 
     @PutMapping
-    @Transactional
-    public ResponseEntity atualizar(@RequestBody ClienteAtualizacao dados) {
-        Cliente cliente = repository.findById(dados.getId())
-                .orElseThrow(() -> new RegistroNaoEncontradoException("Não existe o cliente de ID: " + dados.getId()));
-
-        cliente.atualizarDados(dados);
-
-        return ResponseEntity.ok(new ClienteInfo(cliente));
+    public ResponseEntity<ClienteInfo> atualizar(@RequestBody ClienteAtualizacao dados) {
+        return ResponseEntity.ok(service.atualizar(dados));
     }
 
     @DeleteMapping("/{id}")
-    @Transactional
     public ResponseEntity remover(@PathVariable Long id) {
-        repository.deleteById(id);
-
+        service.remover(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{id}/notas")
+    public ResponseEntity<Page<NotaFiscalInfo>> listarNotasFiscais(@PathVariable Long id) {
+        return ResponseEntity.ok(service.listarNotasFiscais(id));
     }
 
 }

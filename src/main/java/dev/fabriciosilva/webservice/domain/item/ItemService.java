@@ -51,7 +51,7 @@ public class ItemService {
 
     public ItemInfo detalhar(Long id) {
         Item item = itemRepository.findById(id)
-                .orElseThrow(() -> new RegistroNaoEncontradoException("Não existe o item de ID: " + id));
+                .orElseThrow(() -> new RegistroNaoEncontradoException("O item informado não está cadastrado no sistema! ID = " + id));
 
         return new ItemInfo(item);
     }
@@ -60,7 +60,7 @@ public class ItemService {
     public ItemInfo atualizar(ItemAtualizacao dados) {
 
         Item item = itemRepository.findById(dados.getId())
-                .orElseThrow(() -> new RegistroNaoEncontradoException("Não existe o item de ID: " + dados.getId()));
+                .orElseThrow(() -> new RegistroNaoEncontradoException("O item informado não está cadastrado no sistema! ID = " + dados.getId()));
 
         if (dados.getProdutoId() != null) {
             Produto produto = buscarProduto(dados.getProdutoId());
@@ -75,14 +75,14 @@ public class ItemService {
     @Transactional
     public void remover(Long id) {
         Item item = itemRepository.findById(id)
-                .orElseThrow(() -> new RegistroNaoEncontradoException("Item informado não existe! Favor conferir dados"));
+                .orElseThrow(() -> new RegistroNaoEncontradoException("O item informado não está cadastrado no sistema! ID = " + id));
 
         itemRepository.delete(item);
     }
 
     private Produto buscarProduto(Long produtoId) {
         if (!produtoRepository.existsById(produtoId)) {
-            throw new RegistroNaoEncontradoException("Produto não está cadastrado no sistema! ID = " + produtoId);
+            throw new RegistroNaoEncontradoException("O item informado não está cadastrado no sistema! ID = " + produtoId);
         }
         return produtoRepository.getReferenceById(produtoId);
     }

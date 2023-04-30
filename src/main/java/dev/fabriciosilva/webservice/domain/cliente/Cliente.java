@@ -5,6 +5,7 @@ import dev.fabriciosilva.webservice.domain.cliente.dto.ClienteForm;
 import dev.fabriciosilva.webservice.domain.notafiscal.NotaFiscal;
 
 import javax.persistence.*;
+import java.util.Collections;
 import java.util.List;
 
 @Entity
@@ -37,6 +38,10 @@ public class Cliente {
 
     public String getNome() {
         return nome;
+    }
+
+    public List<NotaFiscal> getNotasFiscais() {
+        return Collections.unmodifiableList(this.notasFiscais);
     }
 
     public void atualizarDados(ClienteAtualizacao dados) {
