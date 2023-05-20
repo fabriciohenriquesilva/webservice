@@ -51,8 +51,8 @@ public class ClienteController {
     }
 
     @GetMapping("/{id}/notas")
-    public ResponseEntity<Page<NotaFiscalInfo>> listarNotasFiscais(@PathVariable Long id) {
-        return ResponseEntity.ok(service.listarNotasFiscais(id));
+    public ResponseEntity<Page<NotaFiscalInfo>> listarNotasFiscais(@PathVariable Long id, @PageableDefault Pageable page) {
+        return ResponseEntity.ok(service.listarNotasFiscais(id, page));
     }
 
 }

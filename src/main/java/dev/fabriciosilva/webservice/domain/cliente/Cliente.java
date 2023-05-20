@@ -2,11 +2,8 @@ package dev.fabriciosilva.webservice.domain.cliente;
 
 import dev.fabriciosilva.webservice.domain.cliente.dto.ClienteAtualizacao;
 import dev.fabriciosilva.webservice.domain.cliente.dto.ClienteForm;
-import dev.fabriciosilva.webservice.domain.notafiscal.NotaFiscal;
 
 import javax.persistence.*;
-import java.util.Collections;
-import java.util.List;
 
 @Entity
 @Table(name = "cliente")
@@ -17,8 +14,6 @@ public class Cliente {
     private Long id;
     private String codigo;
     private String nome;
-    @OneToMany(mappedBy = "cliente")
-    private List<NotaFiscal> notasFiscais;
 
     public Cliente() {
     }
@@ -38,10 +33,6 @@ public class Cliente {
 
     public String getNome() {
         return nome;
-    }
-
-    public List<NotaFiscal> getNotasFiscais() {
-        return Collections.unmodifiableList(this.notasFiscais);
     }
 
     public void atualizarDados(ClienteAtualizacao dados) {

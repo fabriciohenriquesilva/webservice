@@ -3,23 +3,23 @@ package dev.fabriciosilva.webservice.domain.cliente;
 import dev.fabriciosilva.webservice.domain.cliente.dto.ClienteAtualizacao;
 import dev.fabriciosilva.webservice.domain.cliente.dto.ClienteForm;
 import dev.fabriciosilva.webservice.domain.cliente.dto.ClienteInfo;
+import dev.fabriciosilva.webservice.domain.notafiscal.NotaFiscalRepository;
 import dev.fabriciosilva.webservice.domain.notafiscal.dto.NotaFiscalInfo;
 import dev.fabriciosilva.webservice.infra.exception.RegistroNaoEncontradoException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class ClienteService {
 
     @Autowired
     private ClienteRepository clienteRepository;
+
+    @Autowired
+    private NotaFiscalRepository notaFiscalRepository;
 
     public Page<ClienteInfo> listar(Pageable page) {
         return clienteRepository.findAll(page).map(ClienteInfo::new);
@@ -57,12 +57,8 @@ public class ClienteService {
         clienteRepository.deleteById(id);
     }
 
-    public Page<NotaFiscalInfo> listarNotasFiscais(Long id) {
-        List<NotaFiscalInfo> notas = clienteRepository.getReferenceById(id)
-                .getNotasFiscais()
-                .stream().map(NotaFiscalInfo::new)
-                .collect(Collectors.toList());
-
-        return new PageImpl<>(notas);
+    public Page<NotaFiscalInfo> listarNotasFiscais(Long id, Pageable page) {
+//        Pageable page = PageRequest.of(0, 10);
+        return notaFiscalRepository.findByClienteId(id, page);
     }
 }
