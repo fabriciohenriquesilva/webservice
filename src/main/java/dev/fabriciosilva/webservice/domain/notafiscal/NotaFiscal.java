@@ -23,7 +23,7 @@ public class NotaFiscal {
     @JoinColumn(name = "fk_cliente")
     private Cliente cliente;
     private LocalDate data;
-    @OneToMany(mappedBy = "notaFiscal", orphanRemoval = true)
+    @OneToMany(mappedBy = "notaFiscal", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Item> itens;
     private BigDecimal valorTotal;
 
@@ -55,6 +55,10 @@ public class NotaFiscal {
         return itens;
     }
 
+    public void setItens(List<Item> itens) {
+        this.itens = itens;
+    }
+
     public BigDecimal getValorTotal() {
         return valorTotal;
     }
@@ -71,10 +75,20 @@ public class NotaFiscal {
         calcularValorTotal();
     }
 
+    public void removerItem(Item item) {
+        if (this.itens != null || !this.itens.isEmpty()) {
+            this.itens.remove(item);
+        }
+    }
+
     public void calcularValorTotal() {
-        this.valorTotal = this.itens.stream()
-                .map(i -> i.getValorTotal())
-                .reduce(BigDecimal::add).get();
+        if (this.itens.isEmpty() || this.itens == null) {
+            this.valorTotal = BigDecimal.ZERO;
+        } else {
+            this.valorTotal = this.itens.stream()
+                    .map(i -> i.getValorTotal())
+                    .reduce(BigDecimal::add).get();
+        }
     }
 
     public void atualizarDados(NotaFiscalAtualizacao dados) {

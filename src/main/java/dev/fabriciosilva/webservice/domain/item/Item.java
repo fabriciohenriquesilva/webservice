@@ -85,7 +85,7 @@ public class Item {
                 .getValorUnitario()
                 .multiply(new BigDecimal(this.quantidade));
 
-        this.notaFiscal.calcularValorTotal();
+//        this.notaFiscal.calcularValorTotal();
     }
 
     public void atualizarDados(ItemAtualizacao dados) {
@@ -96,6 +96,18 @@ public class Item {
             this.quantidade = dados.getQuantidade();
         }
         calculaValorTotal();
+    }
+
+    public void atualizarDados(ItemForm dados) {
+        if (!this.quantidade.equals(dados.getQuantidade())) {
+            this.quantidade = dados.getQuantidade();
+        }
+        if (!this.numeroSequencial.equals(dados.getNumeroSequencial())) {
+            this.numeroSequencial = dados.getNumeroSequencial();
+        }
+        if (!this.valorTotal.equals(dados.getValorTotal())) {
+            this.valorTotal = dados.getValorTotal();
+        }
     }
 
     public void subtrairQuantidade(Integer quantidade) {

@@ -4,6 +4,7 @@ import dev.fabriciosilva.webservice.domain.cliente.Cliente;
 import dev.fabriciosilva.webservice.domain.cliente.ClienteRepository;
 import dev.fabriciosilva.webservice.domain.item.Item;
 import dev.fabriciosilva.webservice.domain.item.ItemRepository;
+import dev.fabriciosilva.webservice.domain.item.dto.ItemForm;
 import dev.fabriciosilva.webservice.domain.notafiscal.dto.*;
 import dev.fabriciosilva.webservice.domain.notafiscal.validations.ValidadorNotaFiscal;
 import dev.fabriciosilva.webservice.domain.produto.Produto;
@@ -15,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -72,30 +74,62 @@ public class NotaFiscalService {
         NotaFiscal notaFiscal = notaFiscalRepository.findById(notaFiscalId)
                 .orElseThrow(() -> new RegistroNaoEncontradoException("A Nota Fiscal informada não está cadastrada no sistema! ID = " + notaFiscalId));
 
-        if (dados.getClienteId() != null) {
-            Cliente cliente = clienteRepository.findById(dados.getClienteId())
-                    .orElseThrow(() -> new RegistroNaoEncontradoException("O cliente informado não está cadastrado no sistema! ID = " + dados.getClienteId()));
+        Long clienteId = dados.getCliente().getId();
+        if (!clienteId.equals(notaFiscal.getCliente().getId())) {
+            Cliente cliente = clienteRepository.findById(clienteId)
+                    .orElseThrow(() -> new RegistroNaoEncontradoException("O Cliente informado não está cadastrada no sistema! ID = " + clienteId));
             notaFiscal.setCliente(cliente);
         }
 
-        dados.getItens().forEach(itemAtualizacao -> {
-            Item item = itemRepository.findById(itemAtualizacao.getId())
-                    .orElseThrow(() -> new RegistroNaoEncontradoException("O item informado não está presente na nota fiscal! ID = " + itemAtualizacao.getId()));
+        List<Item> itensDaNotaFiscal = notaFiscal.getItens();
+        List<ItemForm> itensDosDadosDeAtualizacao = dados.getItens();
 
-            item.atualizarDados(itemAtualizacao);
+        boolean listaDeItensVazia = itensDosDadosDeAtualizacao.isEmpty();
+        if (listaDeItensVazia) {
+            notaFiscal.getItens().clear();
+        } else {
+            // Removendo itens da NF que não estão mais no DTO
+            List<Item> itensASeremRemovidos = new ArrayList<>();
 
-            Long produtoId = itemAtualizacao.getProdutoId();
-            if (produtoId != null) {
-                Produto produto = produtoRepository.findById(produtoId)
-                        .orElseThrow(() -> new RegistroNaoEncontradoException("O produto informado não está cadastrado no sistema! ID = " + produtoId));
-                item.setProduto(produto);
-                item.calculaValorTotal();
+            for (Item itemNf : itensDaNotaFiscal) {
+                Long produtoIdNf = itemNf.getProduto().getId();
+
+                Optional<ItemForm> optional = itensDosDadosDeAtualizacao.stream()
+                        .filter(itemForm -> itemForm.getProduto().getId().equals(produtoIdNf))
+                        .findFirst();
+
+                if (!optional.isPresent()) {
+                    itensASeremRemovidos.add(itemNf);
+                }
             }
-        });
+
+            itensDaNotaFiscal.removeAll(itensASeremRemovidos);
+
+            for (ItemForm itemDto : itensDosDadosDeAtualizacao) {
+                Long produtoIdDto = itemDto.getProduto().getId();
+
+                Optional<Item> itemExisteNaNF = itensDaNotaFiscal.stream()
+                        .filter(itemNf -> itemNf.getProduto().getId().equals(produtoIdDto))
+                        .findFirst();
+
+                if (itemExisteNaNF.isPresent()) {
+                    itemExisteNaNF.get().atualizarDados(itemDto);
+                } else {
+                    Produto produto = produtoRepository.findById(produtoIdDto)
+                            .orElseThrow(() -> new RegistroNaoEncontradoException(
+                                    "O Produto informado não foi encontrado: " + produtoIdDto));
+
+                    Item item = new Item(itemDto.getNumeroSequencial(),
+                            produto,
+                            itemDto.getQuantidade(),
+                            notaFiscal);
+
+                    notaFiscal.adicionarItem(item);
+                }
+            }
+        }
 
         notaFiscal.atualizarDados(dados);
-        notaFiscal.calcularValorTotal();
-
         return new NotaFiscalInfo(notaFiscal);
     }
 
@@ -107,7 +141,6 @@ public class NotaFiscalService {
         notaFiscalRepository.delete(notaFiscal);
     }
 
-    @Transactional
     private void cadastrarItens(NotaFiscalForm form, NotaFiscal notaFiscal) {
         form.getItens().forEach(itemForm -> {
 
@@ -139,7 +172,6 @@ public class NotaFiscalService {
         if (item.getQuantidade() == 0) {
             itemRepository.removerItemDaNotaFiscal(notaFiscalId, itemId);
         }
-
     }
 
     @Transactional

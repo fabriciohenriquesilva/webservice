@@ -58,7 +58,6 @@ public class ClienteService {
     }
 
     public Page<NotaFiscalInfo> listarNotasFiscais(Long id, Pageable page) {
-//        Pageable page = PageRequest.of(0, 10);
         return notaFiscalRepository.findByClienteId(id, page);
     }
 }
