@@ -10,6 +10,7 @@ import dev.fabriciosilva.webservice.domain.notafiscal.validations.ValidadorNotaF
 import dev.fabriciosilva.webservice.domain.produto.Produto;
 import dev.fabriciosilva.webservice.domain.produto.ProdutoRepository;
 import dev.fabriciosilva.webservice.infra.exception.RegistroNaoEncontradoException;
+import dev.fabriciosilva.webservice.infra.exception.RegistroPossuiVinculoException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -138,7 +139,13 @@ public class NotaFiscalService {
         NotaFiscal notaFiscal = notaFiscalRepository.findById(id)
                 .orElseThrow(() -> new RegistroNaoEncontradoException("A Nota Fiscal informada não está cadastrada no sistema! ID = " + id));
 
-        notaFiscalRepository.delete(notaFiscal);
+        try {
+            notaFiscalRepository.delete(notaFiscal);
+            notaFiscalRepository.flush();
+        }
+        catch (RuntimeException ex) {
+            throw new RegistroPossuiVinculoException("Registro possui vínculo com outra entidade! Exclusão impossível!");
+        }
     }
 
     private void cadastrarItens(NotaFiscalForm form, NotaFiscal notaFiscal) {

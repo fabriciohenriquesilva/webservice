@@ -6,6 +6,7 @@ import dev.fabriciosilva.webservice.domain.cliente.dto.ClienteInfo;
 import dev.fabriciosilva.webservice.domain.notafiscal.NotaFiscalRepository;
 import dev.fabriciosilva.webservice.domain.notafiscal.dto.NotaFiscalInfo;
 import dev.fabriciosilva.webservice.infra.exception.RegistroNaoEncontradoException;
+import dev.fabriciosilva.webservice.infra.exception.RegistroPossuiVinculoException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -54,7 +55,14 @@ public class ClienteService {
         if (!clienteRepository.existsById(id)) {
             throw new RegistroNaoEncontradoException("O cliente informado não está cadastrado no sistema! ID = " + id);
         }
-        clienteRepository.deleteById(id);
+
+        try {
+            clienteRepository.deleteById(id);
+            clienteRepository.flush();
+        }
+        catch (Exception e) {
+            throw new RegistroPossuiVinculoException("Registro possui vínculo com outra entidade! Exclusão impossível!");
+        }
     }
 
     public Page<NotaFiscalInfo> listarNotasFiscais(Long id, Pageable page) {

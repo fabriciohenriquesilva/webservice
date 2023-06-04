@@ -20,4 +20,10 @@ public class TratadorDeExcecoes {
     public ResponseEntity tratarErroDeFormulario(DadosValidacaoException ex) {
         return ResponseEntity.badRequest().body(new DadosDetalhamentoErro(ex.getMessage()));
     }
+
+    @ExceptionHandler(RegistroPossuiVinculoException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ResponseEntity tratarErroDeExclusaoDeEntidade(RegistroPossuiVinculoException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new DadosDetalhamentoErro(ex.getMessage()));
+    }
 }

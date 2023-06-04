@@ -8,6 +8,7 @@ import dev.fabriciosilva.webservice.domain.notafiscal.NotaFiscalRepository;
 import dev.fabriciosilva.webservice.domain.produto.Produto;
 import dev.fabriciosilva.webservice.domain.produto.ProdutoRepository;
 import dev.fabriciosilva.webservice.infra.exception.RegistroNaoEncontradoException;
+import dev.fabriciosilva.webservice.infra.exception.RegistroPossuiVinculoException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -77,7 +78,13 @@ public class ItemService {
         Item item = itemRepository.findById(id)
                 .orElseThrow(() -> new RegistroNaoEncontradoException("O item informado não está cadastrado no sistema! ID = " + id));
 
-        itemRepository.delete(item);
+        try {
+            itemRepository.delete(item);
+            itemRepository.flush();
+        }
+        catch (RuntimeException ex) {
+            throw new RegistroPossuiVinculoException("Registro possui vínculo com outra entidade! Exclusão impossível!");
+        }
     }
 
     private Produto buscarProduto(Long produtoId) {

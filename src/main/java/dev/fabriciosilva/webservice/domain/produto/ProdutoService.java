@@ -4,6 +4,7 @@ import dev.fabriciosilva.webservice.domain.produto.dto.ProdutoAtualizacao;
 import dev.fabriciosilva.webservice.domain.produto.dto.ProdutoForm;
 import dev.fabriciosilva.webservice.domain.produto.dto.ProdutoInfo;
 import dev.fabriciosilva.webservice.infra.exception.RegistroNaoEncontradoException;
+import dev.fabriciosilva.webservice.infra.exception.RegistroPossuiVinculoException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -50,6 +51,13 @@ public class ProdutoService {
         if (!produtoRepository.existsById(id)) {
             throw new RegistroNaoEncontradoException("O produto informado não está cadastrado no sistema! ID = : " + id);
         }
-        produtoRepository.deleteById(id);
+
+        try {
+            produtoRepository.deleteById(id);
+            produtoRepository.flush();
+        }
+        catch (RuntimeException ex) {
+            throw new RegistroPossuiVinculoException("Registro possui vínculo com outra entidade! Exclusão impossível!");
+        }
     }
 }
